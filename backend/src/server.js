@@ -37,6 +37,20 @@ async function iniciarservidor() {
         // Verifica la conexión con MySQL en la nube
         const connection = await pool.getConnection();
         console.log('Conexión a la base de datos MySQL establecida correctamente.');
+        
+        // SOLUCIÓN DEFINITIVA: Crear la tabla automáticamente si no existe
+        const createTableQuery = `
+            CREATE TABLE IF NOT EXISTS usuarios (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                nombre VARCHAR(255) NOT NULL,
+                correo VARCHAR(255) NOT NULL UNIQUE,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+        `;
+        
+        await connection.query(createTableQuery);
+        console.log('Tabla "usuarios" verificada o creada exitosamente.');
+        
         connection.release();
         
         app.listen(PORT, () => {
@@ -47,7 +61,7 @@ async function iniciarservidor() {
         });
         
     } catch (error) {
-        console.error("Error al conectar a la base de datos MySQL:", error);
+        console.error("Error al iniciar el servidor o la base de datos:", error);
         console.error(error.message);
     }
 }

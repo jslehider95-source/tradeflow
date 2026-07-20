@@ -1,19 +1,35 @@
-import { Router } from "express";
-import { registrarUsuario, loginUsuario } from "../controllers/usuarios.controller.js";
-import { verificarToken } from "../middleware/auth.middleware.js";
+document.getElementById("registroForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    
+    const nombre = document.getElementById("nombre").value;
+    const email = document.getElementById("email").value;
+    const mensajeDiv = document.getElementById("mensaje");
 
-const router = Router();
+    mensajeDiv.style.color = "black";
+    mensajeDiv.textContent = "Enviando datos...";
 
-// Rutas públicas
-router.post("/registrar", registrarUsuario);
-router.post("/login", loginUsuario);
+    try {
+        const peticion = await fetch(`${API_URL}/usuarios/registrar`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ nombre, email })
+        });
 
-// Ruta protegida de perfil
-router.get("/perfil", verificarToken, (req, res) => {
-    res.json({ 
-        mensaje: "Acceso concedido", 
-        usuario: req.user 
-    });
+        const resultado = await peticion.json();
+
+        if (peticion.ok) {
+            mensajeDiv.style.color = "green";
+            mensajeDiv.textContent = "¡Datos guardados con éxito en la base de datos!";
+            document.getElementById("registroForm").reset();
+        } else {
+            mensajeDiv.style.color = "red";
+            mensajeDiv.textContent = "Error: " + (resultado.message || "No se pudo registrar.");
+        }
+    } catch (error) {
+        mensajeDiv.style.color = "red";
+        mensajeDiv.textContent = "Error de red al conectar con el servidor.";
+        console.error(error);
+    }
 });
-
-export default router;
