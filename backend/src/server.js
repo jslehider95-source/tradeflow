@@ -1,9 +1,15 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import pool from "./config/database.js"; // <--- Importante para verificar la base de datos
+import pool from "./config/database.js";
+
+// 1. Importar todas tus rutas al inicio
 import usuarioRoutes from "./routes/usuario.routes.js";
 import cargaRoutes from "./routes/carga.routes.js";
+import vehiculoRoutes from "./routes/vehiculo.routes.js";
+import envioRoutes from "./routes/envio.routes.js";
+import cotizacionRoutes from "./routes/cotizacion.routes.js";
+import reporteRoutes from "./routes/reporte.routes.js";
 
 dotenv.config();
 
@@ -11,9 +17,18 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// Definir endpoints
+// Ruta raíz de bienvenida (para que el navegador responda bien)
+app.get("/", (req, res) => {
+    res.json({ status: "success", message: "¡API de TradeFlow funcionando correctamente en Railway!" });
+});
+
+// 2. Definir todos tus endpoints juntos
 app.use("/usuarios", usuarioRoutes);
 app.use("/cargas", cargaRoutes);
+app.use("/vehiculos", vehiculoRoutes);
+app.use("/envios", envioRoutes);
+app.use("/cotizaciones", cotizacionRoutes);
+app.use("/reportes", reporteRoutes);
 
 const PORT = process.env.PORT || 3000;
 
@@ -27,7 +42,7 @@ async function iniciarservidor() {
         app.listen(PORT, () => {
             console.log("=================================");
             console.log("TradeFlow iniciado");
-            console.log(`http://localhost:${PORT}`);
+            console.log(`Puerto: ${PORT}`);
             console.log("=================================");
         });
         
@@ -38,17 +53,3 @@ async function iniciarservidor() {
 }
 
 iniciarservidor();
-import vehiculoRoutes from "./routes/vehiculo.routes.js";
-
-// ... (dentro de tus app.use existentes)
-app.use("/vehiculos", vehiculoRoutes);
-import envioRoutes from "./routes/envio.routes.js";
-
-// ... (en tus app.use existentes)
-app.use("/envios", envioRoutes);
-import cotizacionRoutes from "./routes/cotizacion.routes.js";
-import reporteRoutes from "./routes/reporte.routes.js";
-
-// ... (debajo de tus otras rutas app.use)
-app.use("/cotizaciones", cotizacionRoutes);
-app.use("/reportes", reporteRoutes);
