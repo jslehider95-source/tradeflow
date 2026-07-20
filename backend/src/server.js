@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import pool from "./config/database.js";
+import { initDatabase } from "./database/init.js";
 
 // Importar todas las rutas al inicio
 import usuarioRoutes from "./routes/usuario.routes.js";
@@ -37,21 +38,11 @@ async function iniciarservidor() {
         // Verifica la conexión con MySQL en la nube
         const connection = await pool.getConnection();
         console.log('Conexión a la base de datos MySQL establecida correctamente.');
-        
-        // SOLUCIÓN DEFINITIVA: Crear la tabla automáticamente si no existe
-        const createTableQuery = `
-            CREATE TABLE IF NOT EXISTS usuarios (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                nombre VARCHAR(255) NOT NULL,
-                correo VARCHAR(255) NOT NULL UNIQUE,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            );
-        `;
-        
-        await connection.query(createTableQuery);
-        console.log('Tabla "usuarios" verificada o creada exitosamente.');
-        
         connection.release();
+
+        // Crear todas las tablas necesarias (usuarios, carga, vehiculos, envios, cotizaciones)
+        // si aún no existen en la base de datos.
+        await initDatabase();
         
         app.listen(PORT, () => {
             console.log("=================================");
