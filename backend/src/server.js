@@ -3,7 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import pool from "./config/database.js";
 
-// 1. Importar todas tus rutas al inicio
+// Importar todas las rutas al inicio
 import usuarioRoutes from "./routes/usuario.routes.js";
 import cargaRoutes from "./routes/carga.routes.js";
 import vehiculoRoutes from "./routes/vehiculo.routes.js";
@@ -17,12 +17,12 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// Ruta raíz de bienvenida (para que el navegador responda bien)
+// Ruta raíz de bienvenida (evita el error 502 Bad Gateway en el navegador)
 app.get("/", (req, res) => {
     res.json({ status: "success", message: "¡API de TradeFlow funcionando correctamente en Railway!" });
 });
 
-// 2. Definir todos tus endpoints juntos
+// Definir los endpoints de la API
 app.use("/usuarios", usuarioRoutes);
 app.use("/cargas", cargaRoutes);
 app.use("/vehiculos", vehiculoRoutes);
@@ -34,7 +34,7 @@ const PORT = process.env.PORT || 3000;
 
 async function iniciarservidor() {
     try {
-        // Verifica la conexion con MySQL
+        // Verifica la conexión con MySQL en la nube
         const connection = await pool.getConnection();
         console.log('Conexión a la base de datos MySQL establecida correctamente.');
         connection.release();
